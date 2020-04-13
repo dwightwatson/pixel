@@ -1,31 +1,16 @@
 const fs = require('fs');
-const sharp = require('sharp');
+const parseOptions = require('../src/options');
+const createTransformation = require('../src/transform');
 
-module.exports = async (req, res) => {
+module.exports = async (request, response) => {
   const stream = fs.createReadStream(__dirname + '/example.jpg');
 
-  const height = parseInt(req.query.height, 10) || 200;
-  const width = parseInt(req.query.width, 10) || 200;
+  const options = parseOptions(request);
 
-  const transformation = sharp()
-    .rotate()
-    .resize(width, height)
-    .toFormat(getFormat(req));
+  const transformation = createTransformation(options);
 
-  res.setHeader('Content-Type', getContentType(req));
-  res.setHeader('Cache-Control', 'max-age=31536000, public');
+  response.setHeader('Content-Type', options.contentType);
+  response.setHeader('Cache-Control', 'max-age=31536000, public');
 
-  stream.pipe(transformation).pipe(res);
-}
-
-const getFormat = (req) => {
-  const acceptHeader = req.headers['accept'];
-
-  return acceptHeader && acceptHeader.includes('image/webp') ? 'webp' : 'jpg';
-}
-
-const getContentType = (req) => {
-  const format = getFormat(req);
-
-  return format === 'webp' ? 'image/webp' : 'image/jpeg';
-}
+  stream.pipe(transformation).pipe(response);
+};
