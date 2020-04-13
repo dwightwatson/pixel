@@ -7,12 +7,29 @@ module.exports = async (req, res) => {
   const height = parseInt(req.query.height, 10) || 200;
   const width = parseInt(req.query.width, 10) || 200;
 
-  res.setHeader('Content-Type', 'image/jpeg');
-  res.setHeader('Cache-Control', 'max-age=31536000, public');
-
   const transformation = sharp()
     .rotate()
-    .resize(height, width);
+    .resize(height, width)
+    .toFormat(getFormat(req));
+
+  res.setHeader('Content-Type', getContentType(req));
+  res.setHeader('Cache-Control', 'max-age=31536000, public');
 
   stream.pipe(transformation).pipe(res);
+}
+
+const getFormat = (req) => {
+  const acceptHeader = req.headers['accept']
+
+  return acceptHeader && acceptHeader.includes('image/webp')
+    ? 'webp'
+    : 'jpg'
+}
+
+const getContentType = (req) => {
+  const format = getFormat(req);
+
+  return format === 'webp'
+    ? 'image/webp'
+    : 'image/jpeg';
 }
