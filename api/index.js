@@ -19,17 +19,13 @@ module.exports = async (req, res) => {
 }
 
 const getFormat = (req) => {
-  const acceptHeader = req.headers['accept']
+  const acceptHeader = req.headers['accept'];
 
-  return acceptHeader && acceptHeader.includes('image/webp')
-    ? 'webp'
-    : 'jpg'
+  return acceptHeader && acceptHeader.includes('image/webp') ? 'webp' : 'jpg';
 }
 
 const getContentType = (req) => {
   const format = getFormat(req);
 
-  return format === 'webp'
-    ? 'image/webp'
-    : 'image/jpeg';
+  return format === 'webp' ? 'image/webp' : 'image/jpeg';
 }
