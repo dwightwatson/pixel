@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
 
   const transformation = sharp()
     .rotate()
-    .resize(height, width)
+    .resize(width, height)
     .toFormat(getFormat(req));
 
   res.setHeader('Content-Type', getContentType(req));
